@@ -605,7 +605,7 @@ const ENABLE_TAB_SECURITY = true;
 
     function startQuiz() {
 	// මීට පෙර විභාගය කර ඇත්දැයි පරීක්ෂා කිරීම
-    if (localStorage.getItem('exam_done_it') === 'false') {
+    if (localStorage.getItem('exam_done_it') === 'true') {
         alert("ඔබ මෙම විභාගය දැනටමත් එක් වරක් අවසන් කර ඇත!");
         return; 
     }
@@ -627,5 +627,6 @@ const ENABLE_TAB_SECURITY = true;
 </body>
 
 </html>
+
 
 
