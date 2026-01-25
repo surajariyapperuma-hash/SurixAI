@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>තොරතුරු තාක්ෂණ ප්‍රශ්නාවලිය</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- html2canvas CDN for converting HTML to JPEG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+            box-sizing: border-box;
+            -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none; 
+        }
+        .quiz-card {
+            max-width: 550px;
+            width: 100%;
+            background-color: white;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        
+        .option-button {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            padding: 0.75rem;
+            font-size: 1.0rem;
+        }
+        .option-button:hover:not(.disabled) {
+            background-color: #e0f2f1;
+        }
+        .correct-answer {
+            background-color: #84cc16 !important;
+            color: white !important;
+            border-color: #65a30d !important;
+        }
+        .incorrect-answer {
+            background-color: #ef4444 !important;
+            color: white !important;
+            border-color: #dc2626 !important;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        #timer-progress {
+            transition: width 1s linear;
+        }
+        
+        #result-card-to-capture {
+            background-color: #e0f7fa;
+            border: 3px solid #00bcd4;
+        }
+        .logo-placeholder {
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-card">
+    <h1 class="text-2xl font-bold text-gray-800 mb-2 text-center">තොරතුරු තාක්ෂණ ප්‍රශ්නාවලිය</h1>
+    <p class="text-center text-sm text-blue-700 mb-6 font-semibold">NextGen ICT By Suraj අපි විභාග ලියන අලුත් විදිහ.</p>
+
+    <div id="start-screen" class="text-center p-5 bg-blue-50 rounded-lg shadow"> 
+        <h2 class="text-xl font-extrabold mb-4 text-blue-800">ප්‍රශ්නාවලිය ආරම්භ කිරීමට සූදානම්ද?</h2>
+        
+        <div class="mb-3 text-left">
+            <label for="student-name" class="block text-xs font-medium text-gray-700 mb-1">ශිෂ්‍යයාගේ නම (Student Name):</label>
+            <input type="text" id="student-name" placeholder="ඔබේ සම්පුර්ණ නම ඇතුළත් කරන්න" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
+        </div>
+        <div class="mb-4 text-left">
+            <label for="student-class" class="block text-xs font-medium text-gray-700 mb-1">පන්තිය (Class):</label>
+            <input type="text" id="student-class" placeholder="උදා: 10 වසර නැණපියස පන්තිය" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm" required>
+        </div>
+        
+        <button onclick="showInstructions()" class="w-full bg-gray-200 text-gray-700 py-1 text-sm rounded-lg hover:bg-gray-300 transition duration-300 mb-3 shadow-sm">
+            උපදෙස් කියවන්න (Read Instructions)
+        </button>
+        
+        <button onclick="validateAndStartQuiz()" class="w-full bg-blue-600 text-white py-3 text-xl rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg transform hover:scale-[1.01]">
+            Start Quiz
+        </button>
+        <p id="validation-message" class="text-red-600 mt-2 text-xs font-semibold hidden">නම සහ පන්තිය ඇතුළත් කිරීම අනිවාර්යයි!</p>
+    </div>
+
+    <!-- Timer UI Component -->
+    <div id="timer-display" class="mb-3 text-center hidden">
+        <div id="timer-bar" class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mb-2">
+            <div id="timer-progress" class="h-1.5 bg-red-500 transition-all duration-1000 ease-linear" style="width: 100%;"></div>
+        </div>
+        <div class="text-center px-2">
+            <p class="text-xs text-gray-600 font-medium"><span id="time-left">40</span> තත්පර ඉතිරිව ඇත</p>
+        </div>
+    </div>
+    
+    <div id="quiz-container" class="hidden"></div>
+    
+    <div id="results-container" class="hidden">
+        <div id="result-card-to-capture" class="p-5 rounded-lg mb-4 shadow-xl"> 
+            <img src="icon.png" onerror="this.onerror=null;this.src='01.png'" alt="GK ICT Logo" class="logo-placeholder w-16 h-16 mx-auto mb-3">
+            <h2 class="text-2xl font-extrabold text-center mb-1 text-blue-900">ප්‍රශ්නාවලියේ අවසන් ප්‍රතිඵලය</h2>
+            <p class="text-center text-base text-gray-700 mb-4 border-b pb-3 border-blue-400">NextGen ICT By Suraj - තොරතුරු තාක්ෂණ ප්‍රශ්නාවලිය</p>
+            
+            <div class="mb-4 text-center">
+                <p class="text-lg font-bold text-gray-800 mb-1">නම: <span id="display-student-name" class="font-extrabold text-blue-800">--</span></p>
+                <p class="text-sm font-semibold text-gray-600">පන්තිය: <span id="display-student-class" class="font-bold text-blue-700">--</span></p>
+            </div>
+
+            <p id="correct-answers-count" class="text-lg font-bold text-center mb-2 text-gray-700"></p>
+            <p id="final-percentage" class="text-3xl font-black text-center mb-3"></p>
+            <p id="result-date" class="text-xs text-center text-gray-600">දිනය සහ වේලාව: --</p>
+        </div>
+        
+        <button onclick="captureResultsAsImage()" class="w-full bg-green-600 text-white py-2.5 rounded-lg hover:bg-green-700 transition duration-300 mb-3 shadow-md transform hover:scale-[1.02]">
+            ප්‍රතිඵල ලේඛනය බාගත කරන්න (JPEG)
+        </button>
+        
+        <button onclick="resetQuizState()" class="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition duration-300">
+            නැවත මුලට යන්න (Go to Start)
+        </button>
+    </div>
+</div>
+
+<div id="instruction-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 flex items-center justify-center hidden">
+    <div id="modal-content" class="bg-white rounded-xl shadow-2xl p-5 m-4 max-w-sm sm:max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <h3 class="text-xl font-bold text-blue-700 mb-3 border-b pb-1.5">ප්‍රශ්නාවලියේ උපදෙස්</h3>
+        <ul id="instructions-list" class="text-left text-gray-700 space-y-2 list-disc list-inside mb-4 text-sm">
+            <li>සියලුම ප්‍රශ්න සඳහා පිළිතුරු දියයුතුය.</li>
+            <li>සෑම ප්‍රශ්නයකටම පිළිතුරු 4ක් පවතින අතර ඉන් එකක් පමණක් නිවැරදි වේ.</li>
+            <li id="instr-security-warning" class="text-red-600 font-bold hidden">වැදගත්: ප්‍රශ්නාවලිය අතරතුර වෙනත් Tab එකකට මාරු වුවහොත් හෝ Inspect Element කිරීමට උත්සාහ කළහොත් ප්‍රශ්නාවලිය Reset වේ!</li>
+            <li>ප්‍රතිඵල JPEG එකක් ලෙස බාගත කළ හැකිය.</li>
+        </ul>
+        <button onclick="hideInstructions()" class="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg">
+            තේරුම් ගත්තා (Got It)
+        </button>
+    </div>
+</div>
+
+<script>
+    /*// --- SETTINGS (මෙහිදී අගයන් වෙනස් කළ හැක) ---
+   const ENABLE_TIMER = true;        // කාලගණකය අවශ්‍ය නම් true කරන්න
+    const TIME_LIMIT = 90;            // තත්පර ගණන
+    const ENABLE_SHUFFLE = true;       // ප්‍රශ්න සහ පිළිතුරු Shuffle වීමට true කරන්න
+    const ENABLE_TAB_SECURITY = true;  // වෙනත් Tab එකකට යන විට Reset වීමට true කරන්න (එපා නම් false)*/
+	
+	// --- SETTINGS (මුළු පේපර් එකටම එකක් වන සේ වෙනස් කර ඇත) ---
+const ENABLE_TIMER = true;
+const TOTAL_MINUTES = 25; // ඔබට අවශ්‍ය මුළු මිනිත්තු ගණන (මෙහි 25 ලෙස යොදා ඇත)
+const TIME_LIMIT = TOTAL_MINUTES * 60; // මිනිත්තු තත්පර වලට හැරවීම (මුළු තත්පර 1500)
+const ENABLE_SHUFFLE = true;
+const ENABLE_TAB_SECURITY = true;
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let isQuestionLocked = false;
+    let timeRemaining = TIME_LIMIT;
+    let timerInterval;
+    let studentName = '';
+    let studentClass = '';
+    let isQuizStarted = false;
+
+    const startScreen = document.getElementById('start-screen');
+    const quizContainer = document.getElementById('quiz-container');
+    const resultsContainer = document.getElementById('results-container');
+    const timerDisplay = document.getElementById('timer-display');
+    const instructionModal = document.getElementById('instruction-modal');
+
+    // මුල් ප්‍රශ්නාවලිය
+  let originalQuizData = [
+
+     {
+        question: "අතථ්‍ය ලිපින (Virtual Addresses) භෞතික ලිපින (Physical Addresses) බවට පරිවර්තනය කරන දෘඩාංග උපාංගය කුමක්ද?",
+        correct: "මතක කළමනාකරණ ඒකකය (Memory Management Unit).",
+        distractors: ["බසය (Bus).", "නිහින මතකය (Cache Memory).", "පාලන ඒකකය (Control Unit).", "රෙජිස්ටරය (Register)."]
+    },
+    {
+        question: "01010101 සහ 10101010 යන ද්විමය සංඛ්‍යා දෙකෙහි බිටු මට්ටමේ AND (Bitwise AND) මෙහෙයුමේ ප්‍රතිඵලය කුමක්ද?",
+        correct: "00000000",
+        distractors: ["11111111", "01010101", "10101010", "11001100"]
+    },
+    {
+        question: "දශම 165 සංඛ්‍යාවට සමාන අෂ්ටක (Octal) සංඛ්‍යාව කුමක්ද?",
+        correct: "245",
+        distractors: ["425", "254", "524", "215"]
+    },
+    {
+        question: "පහත ඒවායින් පරිගණකයක ප්‍රධාන මතකය (Main Memory) ලෙස හඳුන්වන්නේ කුමක්ද?",
+        correct: "සසම්භාවී ප්‍රවේශ මතකය (RAM).",
+        distractors: ["දෘඩ තැටිය (Hard Disk).", "කියවීමේ පමණක් මතකය (ROM).", "සංයුක්ත තැටිය (CD-ROM).", "ප්‍රකාශ තැටිය (Optical Disk)."]
+    },
+    {
+        question: "පරිගණකයක වේගය මනිනු ලබන සම්මත ඒකකය කුමක්ද?",
+        correct: "හර්ට්ස් (Hertz/Hz).",
+        distractors: ["බයිට් (Byte).", "බිට් (Bit).", "මීටර් (Meter).", "ග්‍රෑම් (Gram)."]
+    },
+    {
+        question: "පහත ඒවායින් ආදාන උපාංගයක් (Input Device) පමණක් වන්නේ කුමක්ද?",
+        correct: "ස්කෑනරය (Scanner).",
+        distractors: ["මොනිටරය (Monitor).", "මුද්‍රණ යන්ත්‍රය (Printer).", "ස්පීකර් (Speaker).", "ප්ලොටරය (Plotter)."]
+    },
+    {
+        question: "පද්ධති මෘදුකාංගයක් (System Software) සඳහා හොඳම උදාහරණය කුමක්ද?",
+        correct: "මෙහෙයුම් පද්ධතිය (Operating System).",
+        distractors: ["වදන් සැකසුම් මෘදුකාංග.", "සමර්පණ මෘදුකාංග.", "වෙබ් බ්‍රවුසරය.", "මාධ්‍ය වාදකය (VLC)."]
+    },
+    {
+        question: "දත්ත සම්ප්‍රේෂණය කිරීමේදී භාවිතා වන අධිවේගී මාධ්‍යය කුමක්ද?",
+        correct: "ප්‍රකාශ තන්තු (Fiber Optics).",
+        distractors: ["ඇඹරුණු යුගල රැහැන් (Twisted Pair).", "සමඅක්ෂ රැහැන් (Coaxial Cable).", "ගුවන් විදුලි තරංග.", "අධෝරක්ත කිරණ (Infrared)."]
+    },
+    {
+        question: "OSI ආකෘතියේ (OSI Model) ඇති මුළු ස්ථර (Layers) ගණන කීයක්ද?",
+        correct: "7",
+        distractors: ["4", "5", "6", "8"]
+    },
+ 
+    {
+        question: "සකසනය (Processor) සහ ප්‍රධාන මතකය අතර වේගය පාලනය කිරීමට යොදාගන්නා කුඩා වේගවත් මතකය කුමක්ද?",
+        correct: "නිහින මතකය (Cache Memory).",
+        distractors: ["අතථ්‍ය මතකය (Virtual Memory).", "ද්විතීයික මතකය.", "ROM මතකය.", "පොදු රෙජිස්ටරය."]
+    },
+    {
+        question: "ASCII කේත ක්‍රමය මගින් එක් අක්ෂරයක් නිරූපණය කිරීමට බිටු කීයක් යොදාගනීද?",
+        correct: "7",
+        distractors: ["4", "16", "32", "64"]
+    },
+    {
+        question: "IP ලිපිනයක (IPv4) ඇති මුළු බිටු ගණන කොපමණද?",
+        correct: "32",
+        distractors: ["8", "16", "64", "128"]
+    },
+    {
+        question: "දත්ත ගබඩා කිරීමේ විශාලතම ඒකකය කුමක්ද?",
+        correct: "පෙටාබයිට් (PB).",
+        distractors: ["කිලෝබයිට් (KB).", "මෙගාබයිට් (MB).", "ගිගාබයිට් (GB).", "ටෙරාබයිට් (TB)."]
+    },
+    {
+        question: "Logic Gate එකක් වන OR gate එකක ප්‍රතිදානය (Output) 1 වීමට නම් විය යුත්තේ කුමක්ද?",
+        correct: "අවම වශයෙන් එක් ආදානයක් 1 විය යුතුය.",
+        distractors: ["සියලුම ආදාන 0 විය යුතුය.", "සියලුම ආදාන 1 විය යුතුය.", "ආදාන දෙකම වෙනස් විය යුතුය.", "ආදාන දෙකම සමාන විය යුතුය."]
+    },
+    {
+        question: "පද්ධති සංවර්ධන ජීවන චක්‍රයේ (SDLC) පළමු පියවර ලෙස සලකනු ලබන්නේ?",
+        correct: "අවශ්‍යතා හඳුනා ගැනීම සහ ශක්‍යතා අධ්‍යයනය.",
+        distractors: ["පද්ධති නිර්මාණය.", "කේතනය කිරීම.", "පරීක්ෂා කිරීම.", "නඩත්තු කිරීම."]
+    },
+    {
+        question: "EPROM යන්නෙහි සම්පූර්ණ අර්ථය කුමක්ද?",
+        correct: "Erasable Programmable Read Only Memory.",
+        distractors: ["Electronic Programmable ROM.", "Extra Programmable ROM.", "Empty Programmable ROM.", "Easy Programmable ROM."]
+    },
+    {
+        question: "Cloud Computing සේවාවක් සඳහා උදාහරණයක් වන්නේ?",
+        correct: "Google Drive.",
+        distractors: ["Notepad.", "MS Paint.", "Calculator.", "Local Disk C:."]
+    },
+    {
+        question: "පරිගණක ජාලයක දත්ත හුවමාරු කිරීමේදී භාවිතා වන නීති මාලාව (Set of rules) හඳුන්වන නම?",
+        correct: "ප්‍රොටොකෝලය (Protocol).",
+        distractors: ["වැඩසටහන (Program).", "ඇල්ගොරිතම (Algorithm).", "ගැලීම් සටහන (Flowchart).", "තර්කය (Logic)."]
+    },
+    {
+        question: "LAN යන්නෙහි සම්පූර්ණ නම කුමක්ද?",
+        correct: "Local Area Network.",
+        distractors: ["Local Access Network.", "Large Area Network.", "Low Area Network.", "Light Access Network."]
+    },
+    {
+        question: "පරිගණකයේ අභ්‍යන්තර ඔරලෝසු වේගය (Clock Speed) මනින ඒකකය?",
+        correct: "ගිගා හර්ට්ස් (GHz).",
+        distractors: ["මෙගා බිට් (Mbps).", "ඩොට්ස් පර් ඉන්ච් (DPI).", "පිටු ගණන (PPM).", "බයිට් (Bytes)."]
+    },
+    {
+        question: "Black Box Testing ක්‍රමයේදී පරීක්ෂා කරනු ලබන්නේ කුමක්ද?",
+        correct: "පද්ධතියේ ක්‍රියාකාරීත්වය (Functionality) පමණි.",
+        distractors: ["අභ්‍යන්තර කේත (Code).", "දෘඩාංග වල ශක්තිය.", "වෛරස් පවතින බව.", "මතකයේ ප්‍රමාණය."]
+    },
+    {
+        question: "පහත ඒවායින් දත්ත සමුදා කළමනාකරණ පද්ධතියක් (DBMS) නොවන්නේ කුමක්ද?",
+        correct: "MS Word.",
+        distractors: ["MySQL.", "Oracle.", "MS Access.", "SQLite."]
+    },
+    {
+        question: "බහු මාධ්‍ය (Multimedia) ගොනුවක් සඳහා උදාහරණයක් වන්නේ?",
+        correct: ".mp4",
+        distractors: [".txt", ".exe", ".bat", ".sys"]
+    },
+    {
+        question: "දත්ත සම්ප්‍රේෂණයේදී Simplex ක්‍රමය යනු කුමක්ද?",
+        correct: "එක් දිශාවකට පමණක් දත්ත ගලා යාම.",
+        distractors: ["දෙපැත්තටම දත්ත ගලා යාම.", "වරකට එක පැත්තකට දත්ත ගලා යාම.", "දත්ත ගලා නොයාම.", "රැහැන් රහිත සම්ප්‍රේෂණය."]
+    },
+    {
+        question: "DNS (Domain Name System) මගින් සිදුකරන ප්‍රධාන කාර්යය කුමක්ද?",
+        correct: "ඩොමේන් නාමයන් IP ලිපින බවට පත් කිරීම.",
+        distractors: ["වෙබ් පිටු නිර්මාණය.", "ඊමේල් යැවීම.", "ගොනු බාගත කිරීම.", "වෛරස් ඉවත් කිරීම."]
+    },
+    {
+        question: "ROM මතකය කුමන වර්ගයට අයත් වේද?",
+        correct: "නශ්‍ය නොවන මතකය (Non-volatile memory).",
+        distractors: ["නශ්‍ය මතකය (Volatile memory).", "තාවකාලික මතකය.", "අතථ්‍ය මතකය.", "ප්‍රධාන මතකය."]
+    },
+    {
+        question: "මෙහෙයුම් පද්ධතියක GUI යන්නෙහි සම්පූර්ණ නම කුමක්ද?",
+        correct: "Graphical User Interface.",
+        distractors: ["General User Interface.", "Global User Interface.", "Graphical Unit Interface.", "Group User Interface."]
+    },
+
+    {
+        question: "BIOS (Basic Input/Output System) වැඩසටහන ස්ථිරවම ගබඩා කර ඇත්තේ?",
+        correct: "ROM චිපය තුළය.",
+        distractors: ["RAM තුළය.", "Hard Disk තුළය.", "CPU තුළය.", "SSD තුළය."]
+    },
+    {
+        question: "බිටු 8 ක් එකතු වූ විට සෑදෙන ඒකකය කුමක්ද?",
+        correct: "බයිටය (Byte).",
+        distractors: ["නිබලය (Nibble).", "වර්ඩ් (Word).", "කිලෝ (Kilo).", "මෙගා (Mega)."]
+    },
+    {
+        question: "Phishing යනු කුමක්ද?",
+        correct: "ව්‍යාජ වෙබ් අඩවි මගින් පුද්ගලික දත්ත සොරකම් කිරීම.",
+        distractors: ["වෛරස් වර්ගයක්.", "දෘඩාංග දෝෂයක්.", "ජාලකරණ ක්‍රමයක්.", "මෘදුකාංග සංවර්ධන ක්‍රමයක්."]
+    },
+    {
+        question: "පරිගණකයේ අංක ගණිතමය හා තර්කන ඒකකය (ALU) පිහිටා ඇත්තේ කුමන කොටසෙහිද?",
+        correct: "මධ්‍ය සැකසුම් ඒකකය (CPU).",
+        distractors: ["ප්‍රධාන මතකය (RAM).", "මවු පුවරුව (Motherboard).", "දෘඩ තැටිය.", "මොනිටරය."]
+    },
+    {
+        question: "පරිගණක වෛරස් වලින් ආරක්ෂා වීමට භාවිතා කරන මෘදුකාංග වර්ගය කුමක්ද?",
+        correct: "ප්‍රති-වෛරස් මෘදුකාංග (Anti-virus software).",
+        distractors: ["බ්‍රවුසරය.", "මෙහෙයුම් පද්ධතිය.", "සම්පාදකය (Compiler).", "අර්ථකථකය (Interpreter)."]
+    },
+    {
+        question: "පරිගණකයක 'Booting' ක්‍රියාවලිය යනු කුමක්ද?",
+        correct: "මෙහෙයුම් පද්ධතිය ප්‍රධාන මතකයට පූරණය වීම.",
+        distractors: ["දත්ත මකා දැමීම.", "මෘදුකාංග ස්ථාපනය කිරීම.", "පින්තූර මුද්‍රණය කිරීම.", "වෙබ් අඩවි පිරික්සීම."]
+    },
+    {
+        question: "විවිධ ගණනය කිරීම් ඉතා පහසුවෙන්, නිවැරදිව සහ කාර්යක්ෂමව සිදු කිරීමට භාවිතා කරන මෘදුකාංග වර්ගය කුමක්ද?",
+        correct: "විද්‍යුත් පැතුරුම්පත් (Electronic Spreadsheets).",
+        distractors: ["වදන් සැකසුම් මෘදුකාංග.", "සමර්පණ මෘදුකාංග.", "දත්ත සමුදාය කළමනාකරණ පද්ධති."]
+    },
+    {
+        question: "IPv6 ලිපිනයක ඇති බිටු ගණන කොපමණද?",
+        correct: "128",
+        distractors: ["32", "48", "64", "256"]
+    },
+    {
+        question: "පහත ඒවායින් සංගෘහිත පරිපථ (IC) භාවිතා කළ පරිගණක පරම්පරාව කුමක්ද?",
+        correct: "තුන්වන පරම්පරාව.",
+        distractors: ["පළමු පරම්පරාව.", "දෙවන පරම්පරාව.", "හතරවන පරම්පරාව.", "පස්වන පරම්පරාව."]
+    },
+    {
+        question: "අන්තර්ජාලය හරහා කෙරෙන අපරාධ හඳුන්වන පොදු නාමය කුමක්ද?",
+        correct: "සයිබර් අපරාධ (Cyber Crimes).",
+        distractors: ["සාමාන්‍ය අපරාධ.", "දත්ත අපරාධ.", "මෘදුකාංග වැරදි.", "පද්ධති දෝෂ."]
+    },
+	{
+        "question": "F = (A + B' + C).(A + B' + C') ප්‍රකාශනය සුළු කළ විට ලැබෙන්නේ කුමක්ද?",
+        "correct": "A + B'",
+        "distractors": ["A + C", "B' + C", "A.B'", "1"]
+    },
+	{
+        "question": "A'BC + AB'C + ABC' + ABC ප්‍රකාශනය K-Map එකක් මගින් සුළු කළ විට ලැබෙන අගය කුමක්ද?",
+        "correct": "AB + BC + AC",
+        "distractors": ["A + B + C", "ABC", "1", "0"]
+    },
+	{
+        "question": "F = A.(A' + B) ප්‍රකාශනය සුළු කළ විට ලැබෙන අගය කුමක්ද?",
+        "correct": "A.B",
+        "distractors": ["A", "B", "A + B", "0"]
+    },
+
+    
+]
+
+    let quizData = [...originalQuizData];
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // --- SECURITY LOGIC ---
+    function handleSecurityReset(reason) {
+        if (isQuizStarted) {
+            alert(`ආරක්ෂිත හේතූන් මත ප්‍රශ්නාවලිය Reset විය! (${reason})`);
+            resetQuizState();
+        }
+    }
+
+    // Tab Security Toggle Logic
+    document.addEventListener("visibilitychange", function() {
+        if (ENABLE_TAB_SECURITY && document.hidden) {
+            handleSecurityReset("Tab Switch Detected");
+        }
+    });
+
+    window.addEventListener("blur", function() {
+        if (ENABLE_TAB_SECURITY) {
+            handleSecurityReset("Window Focus Lost");
+        }
+    });
+
+    // Inspect Element (Always Blocked for Security)
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123 || 
+           (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || 
+           (e.ctrlKey && e.keyCode == 85)) {
+            e.preventDefault();
+            handleSecurityReset("Inspect Element Attempted");
+            return false;
+        }
+    };
+
+    function showInstructions() {
+        if (ENABLE_TAB_SECURITY) {
+            document.getElementById('instr-security-warning').classList.remove('hidden');
+        } else {
+            document.getElementById('instr-security-warning').classList.add('hidden');
+        }
+        instructionModal.classList.remove('hidden');
+    }
+
+    function hideInstructions() {
+        instructionModal.classList.add('hidden');
+    }
+
+    function validateAndStartQuiz() {
+        studentName = document.getElementById('student-name').value.trim();
+        studentClass = document.getElementById('student-class').value.trim();
+
+        if (!studentName || !studentClass) {
+            document.getElementById('validation-message').classList.remove('hidden');
+            return;
+        }
+        startQuiz();
+    }
+
+    function startTimer() {
+        if (!ENABLE_TIMER) return;
+        if (timerInterval) clearInterval(timerInterval);
+        //timeRemaining = TIME_LIMIT;
+        updateTimerUI();
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            updateTimerUI();
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                handleTimeout();
+            }
+        }, 1000);
+    }
+
+    function updateTimerUI() {
+        if (!ENABLE_TIMER) return;
+		const minutes = Math.floor(timeRemaining / 60);
+		const seconds = timeRemaining % 60;
+        document.getElementById('time-left').textContent =`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`; //timeRemaining;
+        const progress = (timeRemaining / TIME_LIMIT) * 100;
+        document.getElementById('timer-progress').style.width = `${progress}%`;
+    }
+	
+
+    function handleTimeout() {
+        isQuestionLocked = true;
+        const correct = quizData[currentQuestionIndex].correct;
+        document.querySelectorAll('.option-button').forEach(btn => {
+            if (btn.textContent.trim() === correct) btn.classList.add('correct-answer');
+            btn.classList.add('disabled');
+        });
+        const nb = document.getElementById('next-button');
+        nb.disabled = false;
+        nb.classList.replace('bg-gray-400', 'bg-blue-600');
+    }
+
+    function renderQuestion() {
+        if (currentQuestionIndex >= quizData.length) {
+            showResults();
+            return;
+        }
+
+        isQuestionLocked = false;
+        const currentQ = quizData[currentQuestionIndex];
+        
+        let options = [...currentQ.distractors, currentQ.correct];
+        if (ENABLE_SHUFFLE) {
+            options = shuffleArray(options);
+        }
+
+        quizContainer.innerHTML = `
+            <div class="mb-4">
+                <p class="text-base font-semibold text-cyan-700 mb-2">ප්‍රශ්නය ${currentQuestionIndex + 1} / ${quizData.length}</p>
+                <h2 class="text-lg font-bold text-gray-700">${currentQ.question}</h2>
+            </div>
+            <div id="options-list" class="space-y-2">
+                ${options.map(opt => `
+                    <button class="option-button w-full text-left p-3 border border-gray-300 rounded-lg text-gray-700 bg-gray-50" onclick="checkAnswer(this, '${currentQ.correct.replace(/'/g, "\\'")}')">${opt}</button>
+                `).join('')}
+            </div>
+            <button id="next-button" onclick="nextQuestion()" class="mt-4 w-full bg-gray-400 text-white py-2.5 rounded-lg transition duration-300" disabled>ඊළඟ ප්‍රශ්නය (Next)</button>
+        `;
+        
+        if (ENABLE_TIMER) {
+            timerDisplay.classList.remove('hidden');
+            startTimer();
+        } else {
+            timerDisplay.classList.add('hidden');
+        }
+    }
+
+    function checkAnswer(btn, correct) {
+        if (isQuestionLocked) return;
+        if (ENABLE_TIMER) clearInterval(timerInterval);
+        isQuestionLocked = true;
+
+        if (btn.textContent.trim() === correct) {
+            score++;
+            btn.classList.add('correct-answer');
+        } else {
+            btn.classList.add('incorrect-answer');
+            document.querySelectorAll('.option-button').forEach(b => {
+                if (b.textContent.trim() === correct) b.classList.add('correct-answer');
+            });
+        }
+
+        document.querySelectorAll('.option-button').forEach(b => b.classList.add('disabled'));
+        const nb = document.getElementById('next-button');
+        nb.disabled = false;
+        nb.classList.replace('bg-gray-400', 'bg-blue-600');
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        renderQuestion();
+    }
+
+    function showResults() {
+	clearInterval(timerInterval);
+    
+    // විභාගය අවසන් කළ බව සටහන් කිරීම
+    localStorage.setItem('exam_done_it', 'true');
+        //isQuizStarted = false; 
+        quizContainer.classList.add('hidden');
+        timerDisplay.classList.add('hidden');
+        resultsContainer.classList.remove('hidden');
+        
+        document.getElementById('display-student-name').textContent = studentName;
+        document.getElementById('display-student-class').textContent = studentClass;
+        
+        const perc = Math.round((score / quizData.length) * 100);
+        document.getElementById('correct-answers-count').textContent = `නිවැරදි පිළිතුරු: ${score} / ${quizData.length}`;
+        document.getElementById('final-percentage').textContent = `ලකුණු: ${perc}%`;
+        
+        const now = new Date();
+        document.getElementById('result-date').textContent = `දිනය: ${now.toLocaleDateString('si-LK')} | වේලාව: ${now.toLocaleTimeString('si-LK')}`;
+    }
+
+    function captureResultsAsImage() {
+        const card = document.getElementById('result-card-to-capture');
+        html2canvas(card, { scale: 2 }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `Result_${studentName}.jpeg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        });
+    }
+
+    function resetQuizState() {
+        currentQuestionIndex = 0;
+        score = 0;
+        isQuizStarted = false;
+        if (timerInterval) clearInterval(timerInterval);
+        startScreen.classList.remove('hidden');
+        quizContainer.classList.add('hidden');
+        resultsContainer.classList.add('hidden');
+        timerDisplay.classList.add('hidden');
+        document.getElementById('student-name').value = '';
+        document.getElementById('student-class').value = '';
+    }
+
+    function startQuiz() {
+	// මීට පෙර විභාගය කර ඇත්දැයි පරීක්ෂා කිරීම
+    if (localStorage.getItem('exam_done_it') === 'false') {
+        alert("ඔබ මෙම විභාගය දැනටමත් එක් වරක් අවසන් කර ඇත!");
+        return; 
+    }
+        isQuizStarted = true;
+        quizData = [...originalQuizData];
+        if (ENABLE_SHUFFLE) {
+            shuffleArray(quizData);
+        }
+        startScreen.classList.add('hidden');
+        quizContainer.classList.remove('hidden');
+        renderQuestion();
+    }
+
+
+
+</script>
+
+<script src="Questions.js"></script>
+</body>
+</html>
