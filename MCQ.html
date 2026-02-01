@@ -164,7 +164,7 @@
 	
 	// --- SETTINGS (මුළු පේපර් එකටම එකක් වන සේ වෙනස් කර ඇත) ---
 const ENABLE_TIMER = true;
-const TOTAL_MINUTES = 25; // ඔබට අවශ්‍ය මුළු මිනිත්තු ගණන (මෙහි 25 ලෙස යොදා ඇත)
+const TOTAL_MINUTES = 60; // ඔබට අවශ්‍ය මුළු මිනිත්තු ගණන (මෙහි 25 ලෙස යොදා ඇත)
 const TIME_LIMIT = TOTAL_MINUTES * 60; // මිනිත්තු තත්පර වලට හැරවීම (මුළු තත්පර 1500)
 const ENABLE_SHUFFLE = true;
 const ENABLE_TAB_SECURITY = true;
@@ -187,212 +187,7 @@ const ENABLE_TAB_SECURITY = true;
     // මුල් ප්‍රශ්නාවලිය
   let originalQuizData = [
 
-     {
-        question: "අතථ්‍ය ලිපින (Virtual Addresses) භෞතික ලිපින (Physical Addresses) බවට පරිවර්තනය කරන දෘඩාංග උපාංගය කුමක්ද?",
-        correct: "මතක කළමනාකරණ ඒකකය (Memory Management Unit).",
-        distractors: ["බසය (Bus).", "නිහින මතකය (Cache Memory).", "පාලන ඒකකය (Control Unit).", "රෙජිස්ටරය (Register)."]
-    },
-    {
-        question: "01010101 සහ 10101010 යන ද්විමය සංඛ්‍යා දෙකෙහි බිටු මට්ටමේ AND (Bitwise AND) මෙහෙයුමේ ප්‍රතිඵලය කුමක්ද?",
-        correct: "00000000",
-        distractors: ["11111111", "01010101", "10101010", "11001100"]
-    },
-    {
-        question: "දශම 165 සංඛ්‍යාවට සමාන අෂ්ටක (Octal) සංඛ්‍යාව කුමක්ද?",
-        correct: "245",
-        distractors: ["425", "254", "524", "215"]
-    },
-    {
-        question: "පහත ඒවායින් පරිගණකයක ප්‍රධාන මතකය (Main Memory) ලෙස හඳුන්වන්නේ කුමක්ද?",
-        correct: "සසම්භාවී ප්‍රවේශ මතකය (RAM).",
-        distractors: ["දෘඩ තැටිය (Hard Disk).", "කියවීමේ පමණක් මතකය (ROM).", "සංයුක්ත තැටිය (CD-ROM).", "ප්‍රකාශ තැටිය (Optical Disk)."]
-    },
-    {
-        question: "පරිගණකයක වේගය මනිනු ලබන සම්මත ඒකකය කුමක්ද?",
-        correct: "හර්ට්ස් (Hertz/Hz).",
-        distractors: ["බයිට් (Byte).", "බිට් (Bit).", "මීටර් (Meter).", "ග්‍රෑම් (Gram)."]
-    },
-    {
-        question: "පහත ඒවායින් ආදාන උපාංගයක් (Input Device) පමණක් වන්නේ කුමක්ද?",
-        correct: "ස්කෑනරය (Scanner).",
-        distractors: ["මොනිටරය (Monitor).", "මුද්‍රණ යන්ත්‍රය (Printer).", "ස්පීකර් (Speaker).", "ප්ලොටරය (Plotter)."]
-    },
-    {
-        question: "පද්ධති මෘදුකාංගයක් (System Software) සඳහා හොඳම උදාහරණය කුමක්ද?",
-        correct: "මෙහෙයුම් පද්ධතිය (Operating System).",
-        distractors: ["වදන් සැකසුම් මෘදුකාංග.", "සමර්පණ මෘදුකාංග.", "වෙබ් බ්‍රවුසරය.", "මාධ්‍ය වාදකය (VLC)."]
-    },
-    {
-        question: "දත්ත සම්ප්‍රේෂණය කිරීමේදී භාවිතා වන අධිවේගී මාධ්‍යය කුමක්ද?",
-        correct: "ප්‍රකාශ තන්තු (Fiber Optics).",
-        distractors: ["ඇඹරුණු යුගල රැහැන් (Twisted Pair).", "සමඅක්ෂ රැහැන් (Coaxial Cable).", "ගුවන් විදුලි තරංග.", "අධෝරක්ත කිරණ (Infrared)."]
-    },
-    {
-        question: "OSI ආකෘතියේ (OSI Model) ඇති මුළු ස්ථර (Layers) ගණන කීයක්ද?",
-        correct: "7",
-        distractors: ["4", "5", "6", "8"]
-    },
- 
-    {
-        question: "සකසනය (Processor) සහ ප්‍රධාන මතකය අතර වේගය පාලනය කිරීමට යොදාගන්නා කුඩා වේගවත් මතකය කුමක්ද?",
-        correct: "නිහින මතකය (Cache Memory).",
-        distractors: ["අතථ්‍ය මතකය (Virtual Memory).", "ද්විතීයික මතකය.", "ROM මතකය.", "පොදු රෙජිස්ටරය."]
-    },
-    {
-        question: "ASCII කේත ක්‍රමය මගින් එක් අක්ෂරයක් නිරූපණය කිරීමට බිටු කීයක් යොදාගනීද?",
-        correct: "7",
-        distractors: ["4", "16", "32", "64"]
-    },
-    {
-        question: "IP ලිපිනයක (IPv4) ඇති මුළු බිටු ගණන කොපමණද?",
-        correct: "32",
-        distractors: ["8", "16", "64", "128"]
-    },
-    {
-        question: "දත්ත ගබඩා කිරීමේ විශාලතම ඒකකය කුමක්ද?",
-        correct: "පෙටාබයිට් (PB).",
-        distractors: ["කිලෝබයිට් (KB).", "මෙගාබයිට් (MB).", "ගිගාබයිට් (GB).", "ටෙරාබයිට් (TB)."]
-    },
-    {
-        question: "Logic Gate එකක් වන OR gate එකක ප්‍රතිදානය (Output) 1 වීමට නම් විය යුත්තේ කුමක්ද?",
-        correct: "අවම වශයෙන් එක් ආදානයක් 1 විය යුතුය.",
-        distractors: ["සියලුම ආදාන 0 විය යුතුය.", "සියලුම ආදාන 1 විය යුතුය.", "ආදාන දෙකම වෙනස් විය යුතුය.", "ආදාන දෙකම සමාන විය යුතුය."]
-    },
-    {
-        question: "පද්ධති සංවර්ධන ජීවන චක්‍රයේ (SDLC) පළමු පියවර ලෙස සලකනු ලබන්නේ?",
-        correct: "අවශ්‍යතා හඳුනා ගැනීම සහ ශක්‍යතා අධ්‍යයනය.",
-        distractors: ["පද්ධති නිර්මාණය.", "කේතනය කිරීම.", "පරීක්ෂා කිරීම.", "නඩත්තු කිරීම."]
-    },
-    {
-        question: "EPROM යන්නෙහි සම්පූර්ණ අර්ථය කුමක්ද?",
-        correct: "Erasable Programmable Read Only Memory.",
-        distractors: ["Electronic Programmable ROM.", "Extra Programmable ROM.", "Empty Programmable ROM.", "Easy Programmable ROM."]
-    },
-    {
-        question: "Cloud Computing සේවාවක් සඳහා උදාහරණයක් වන්නේ?",
-        correct: "Google Drive.",
-        distractors: ["Notepad.", "MS Paint.", "Calculator.", "Local Disk C:."]
-    },
-    {
-        question: "පරිගණක ජාලයක දත්ත හුවමාරු කිරීමේදී භාවිතා වන නීති මාලාව (Set of rules) හඳුන්වන නම?",
-        correct: "ප්‍රොටොකෝලය (Protocol).",
-        distractors: ["වැඩසටහන (Program).", "ඇල්ගොරිතම (Algorithm).", "ගැලීම් සටහන (Flowchart).", "තර්කය (Logic)."]
-    },
-    {
-        question: "LAN යන්නෙහි සම්පූර්ණ නම කුමක්ද?",
-        correct: "Local Area Network.",
-        distractors: ["Local Access Network.", "Large Area Network.", "Low Area Network.", "Light Access Network."]
-    },
-    {
-        question: "පරිගණකයේ අභ්‍යන්තර ඔරලෝසු වේගය (Clock Speed) මනින ඒකකය?",
-        correct: "ගිගා හර්ට්ස් (GHz).",
-        distractors: ["මෙගා බිට් (Mbps).", "ඩොට්ස් පර් ඉන්ච් (DPI).", "පිටු ගණන (PPM).", "බයිට් (Bytes)."]
-    },
-    {
-        question: "Black Box Testing ක්‍රමයේදී පරීක්ෂා කරනු ලබන්නේ කුමක්ද?",
-        correct: "පද්ධතියේ ක්‍රියාකාරීත්වය (Functionality) පමණි.",
-        distractors: ["අභ්‍යන්තර කේත (Code).", "දෘඩාංග වල ශක්තිය.", "වෛරස් පවතින බව.", "මතකයේ ප්‍රමාණය."]
-    },
-    {
-        question: "පහත ඒවායින් දත්ත සමුදා කළමනාකරණ පද්ධතියක් (DBMS) නොවන්නේ කුමක්ද?",
-        correct: "MS Word.",
-        distractors: ["MySQL.", "Oracle.", "MS Access.", "SQLite."]
-    },
-    {
-        question: "බහු මාධ්‍ය (Multimedia) ගොනුවක් සඳහා උදාහරණයක් වන්නේ?",
-        correct: ".mp4",
-        distractors: [".txt", ".exe", ".bat", ".sys"]
-    },
-    {
-        question: "දත්ත සම්ප්‍රේෂණයේදී Simplex ක්‍රමය යනු කුමක්ද?",
-        correct: "එක් දිශාවකට පමණක් දත්ත ගලා යාම.",
-        distractors: ["දෙපැත්තටම දත්ත ගලා යාම.", "වරකට එක පැත්තකට දත්ත ගලා යාම.", "දත්ත ගලා නොයාම.", "රැහැන් රහිත සම්ප්‍රේෂණය."]
-    },
-    {
-        question: "DNS (Domain Name System) මගින් සිදුකරන ප්‍රධාන කාර්යය කුමක්ද?",
-        correct: "ඩොමේන් නාමයන් IP ලිපින බවට පත් කිරීම.",
-        distractors: ["වෙබ් පිටු නිර්මාණය.", "ඊමේල් යැවීම.", "ගොනු බාගත කිරීම.", "වෛරස් ඉවත් කිරීම."]
-    },
-    {
-        question: "ROM මතකය කුමන වර්ගයට අයත් වේද?",
-        correct: "නශ්‍ය නොවන මතකය (Non-volatile memory).",
-        distractors: ["නශ්‍ය මතකය (Volatile memory).", "තාවකාලික මතකය.", "අතථ්‍ය මතකය.", "ප්‍රධාන මතකය."]
-    },
-    {
-        question: "මෙහෙයුම් පද්ධතියක GUI යන්නෙහි සම්පූර්ණ නම කුමක්ද?",
-        correct: "Graphical User Interface.",
-        distractors: ["General User Interface.", "Global User Interface.", "Graphical Unit Interface.", "Group User Interface."]
-    },
-
-    {
-        question: "BIOS (Basic Input/Output System) වැඩසටහන ස්ථිරවම ගබඩා කර ඇත්තේ?",
-        correct: "ROM චිපය තුළය.",
-        distractors: ["RAM තුළය.", "Hard Disk තුළය.", "CPU තුළය.", "SSD තුළය."]
-    },
-    {
-        question: "බිටු 8 ක් එකතු වූ විට සෑදෙන ඒකකය කුමක්ද?",
-        correct: "බයිටය (Byte).",
-        distractors: ["නිබලය (Nibble).", "වර්ඩ් (Word).", "කිලෝ (Kilo).", "මෙගා (Mega)."]
-    },
-    {
-        question: "Phishing යනු කුමක්ද?",
-        correct: "ව්‍යාජ වෙබ් අඩවි මගින් පුද්ගලික දත්ත සොරකම් කිරීම.",
-        distractors: ["වෛරස් වර්ගයක්.", "දෘඩාංග දෝෂයක්.", "ජාලකරණ ක්‍රමයක්.", "මෘදුකාංග සංවර්ධන ක්‍රමයක්."]
-    },
-    {
-        question: "පරිගණකයේ අංක ගණිතමය හා තර්කන ඒකකය (ALU) පිහිටා ඇත්තේ කුමන කොටසෙහිද?",
-        correct: "මධ්‍ය සැකසුම් ඒකකය (CPU).",
-        distractors: ["ප්‍රධාන මතකය (RAM).", "මවු පුවරුව (Motherboard).", "දෘඩ තැටිය.", "මොනිටරය."]
-    },
-    {
-        question: "පරිගණක වෛරස් වලින් ආරක්ෂා වීමට භාවිතා කරන මෘදුකාංග වර්ගය කුමක්ද?",
-        correct: "ප්‍රති-වෛරස් මෘදුකාංග (Anti-virus software).",
-        distractors: ["බ්‍රවුසරය.", "මෙහෙයුම් පද්ධතිය.", "සම්පාදකය (Compiler).", "අර්ථකථකය (Interpreter)."]
-    },
-    {
-        question: "පරිගණකයක 'Booting' ක්‍රියාවලිය යනු කුමක්ද?",
-        correct: "මෙහෙයුම් පද්ධතිය ප්‍රධාන මතකයට පූරණය වීම.",
-        distractors: ["දත්ත මකා දැමීම.", "මෘදුකාංග ස්ථාපනය කිරීම.", "පින්තූර මුද්‍රණය කිරීම.", "වෙබ් අඩවි පිරික්සීම."]
-    },
-    {
-        question: "විවිධ ගණනය කිරීම් ඉතා පහසුවෙන්, නිවැරදිව සහ කාර්යක්ෂමව සිදු කිරීමට භාවිතා කරන මෘදුකාංග වර්ගය කුමක්ද?",
-        correct: "විද්‍යුත් පැතුරුම්පත් (Electronic Spreadsheets).",
-        distractors: ["වදන් සැකසුම් මෘදුකාංග.", "සමර්පණ මෘදුකාංග.", "දත්ත සමුදාය කළමනාකරණ පද්ධති."]
-    },
-    {
-        question: "IPv6 ලිපිනයක ඇති බිටු ගණන කොපමණද?",
-        correct: "128",
-        distractors: ["32", "48", "64", "256"]
-    },
-    {
-        question: "පහත ඒවායින් සංගෘහිත පරිපථ (IC) භාවිතා කළ පරිගණක පරම්පරාව කුමක්ද?",
-        correct: "තුන්වන පරම්පරාව.",
-        distractors: ["පළමු පරම්පරාව.", "දෙවන පරම්පරාව.", "හතරවන පරම්පරාව.", "පස්වන පරම්පරාව."]
-    },
-    {
-        question: "අන්තර්ජාලය හරහා කෙරෙන අපරාධ හඳුන්වන පොදු නාමය කුමක්ද?",
-        correct: "සයිබර් අපරාධ (Cyber Crimes).",
-        distractors: ["සාමාන්‍ය අපරාධ.", "දත්ත අපරාධ.", "මෘදුකාංග වැරදි.", "පද්ධති දෝෂ."]
-    },
-	{
-        "question": "F = (A + B' + C).(A + B' + C') ප්‍රකාශනය සුළු කළ විට ලැබෙන්නේ කුමක්ද?",
-        "correct": "A + B'",
-        "distractors": ["A + C", "B' + C", "A.B'", "1"]
-    },
-	{
-        "question": "A'BC + AB'C + ABC' + ABC ප්‍රකාශනය K-Map එකක් මගින් සුළු කළ විට ලැබෙන අගය කුමක්ද?",
-        "correct": "AB + BC + AC",
-        "distractors": ["A + B + C", "ABC", "1", "0"]
-    },
-	{
-        "question": "F = A.(A' + B) ප්‍රකාශනය සුළු කළ විට ලැබෙන අගය කුමක්ද?",
-        "correct": "A.B",
-        "distractors": ["A", "B", "A + B", "0"]
-    },
-
-    
-]
- 
+   
     {
         "question": "ජාලයක තිබිය යුතු අවම පරිගණක සංඛ්‍යාව කොපමණද?",
         "correct": "2.",
@@ -794,8 +589,14 @@ const ENABLE_TAB_SECURITY = true;
         "question": "Classless Inter-Domain Routing (CIDR) හඳුන්වා දීමට ප්‍රධාන හේතුව කුමක්ද?",
         "correct": "IP ලිපින නාස්තිය අවම කිරීම සහ රවුටින් වගු වල ප්‍රමාණය පාලනය කිරීම.",
         "distractors": ["IPv6 භාවිතය නතර කිරීම.", "සියලුම IP ලිපින Public ලිපින බවට පත් කිරීම.", "ජාලයේ ආරක්ෂාව වැඩි කිරීම.", "රවුටර් වල මිල අඩු කිරීම."]
-    };
+    }
 ]
+
+
+
+    
+
+
     let quizData = [...originalQuizData];
 
     function shuffleArray(array) {
@@ -1008,7 +809,7 @@ const ENABLE_TAB_SECURITY = true;
 
     function startQuiz() {
 	// මීට පෙර විභාගය කර ඇත්දැයි පරීක්ෂා කිරීම
-    if (localStorage.getItem('exam_done_it') === 'true') {
+    if (localStorage.getItem('exam_done_it') === 'false') {
         alert("ඔබ මෙම විභාගය දැනටමත් එක් වරක් අවසන් කර ඇත!");
         return; 
     }
@@ -1028,11 +829,4 @@ const ENABLE_TAB_SECURITY = true;
 
 <script src="Questions.js"></script>
 </body>
-
 </html>
-
-
-
-
-
-
